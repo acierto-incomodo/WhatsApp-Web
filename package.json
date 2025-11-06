@@ -1,6 +1,6 @@
 {
   "name": "whatsapp-web",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Cliente de WhatsApp Web hecho con Electron",
   "main": "main.js",
   "author": "StormGamesStudios",
@@ -15,11 +15,23 @@
     "directories": {
       "output": "release"
     },
+    "extraResources": [
+      {
+        "from": "icons/icon.ico",
+        "to": "icons/icon.ico",
+        "filter": "**/*"
+      },
+      {
+        "from": "icons/icon.ico",
+        "to": "icon.ico",
+        "filter": "**/*"
+      }
+    ],
     "files": [
       "main.js",
       "preload.js",
       "package.json",
-      "icon.png"
+      "icons/icon.png"
     ],
     "linux": {
       "target": ["deb"],
