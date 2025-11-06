@@ -1,6 +1,6 @@
 {
   "name": "whatsapp-web",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Cliente de WhatsApp Web hecho con Electron",
   "main": "main.js",
   "author": "StormGamesStudios",
@@ -24,7 +24,7 @@
     "linux": {
       "target": ["deb"],
       "category": "Network",
-      "icon": "icon.png",
+      "icon": "icons",
       "maintainer": "StormGamesStudios <meliodas.aitor@gmail.com>",
       "synopsis": "Cliente no oficial de WhatsApp Web",
       "description": "Aplicación ligera basada en Electron que abre WhatsApp Web y guarda tus datos de sesión localmente."
