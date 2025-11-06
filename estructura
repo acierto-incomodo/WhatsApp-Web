@@ -1,0 +1,6 @@
+whatsapp-electron/
+│
+├─ main.js
+├─ preload.js
+├─ package.json
+└─ icon.png    ← (tu icono, opcional, 512x512 recomendado)
