@@ -1,6 +1,6 @@
 {
   "name": "whatsapp-web",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Cliente de WhatsApp Web hecho con Electron",
   "main": "main.js",
   "author": "StormGamesStudios",
@@ -34,7 +34,9 @@
       "icons/icon.png"
     ],
     "linux": {
-      "target": ["deb"],
+      "target": [
+        "deb"
+      ],
       "category": "Network",
       "icon": "icons",
       "maintainer": "StormGamesStudios <meliodas.aitor@gmail.com>",
@@ -45,5 +47,8 @@
   "devDependencies": {
     "electron": "^39.1.0",
     "electron-builder": "^26.0.12"
+  },
+  "dependencies": {
+    "electron-store": "^11.0.2"
   }
 }
