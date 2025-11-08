@@ -1,6 +1,6 @@
 {
   "name": "whatsapp-web",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Cliente de WhatsApp Web hecho con Electron",
   "main": "main.js",
   "author": "StormGamesStudios",
