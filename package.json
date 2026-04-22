@@ -7,7 +7,17 @@
   "license": "MIT",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --linux deb"
+    "build": "electron-builder",
+    "dist": "electron-builder --publish always"
+  },
+  "dependencies": {
+    "electron-store": "^11.0.2",
+    "electron-updater": "^6.8.3",
+    "electron-log": "^5.4.3"
+  },
+  "devDependencies": {
+    "electron": "^41.2.2",
+    "electron-builder": "^26.8.1"
   },
   "build": {
     "appId": "com.stormgamesstudios.whatsapp",
@@ -15,40 +25,53 @@
     "directories": {
       "output": "release"
     },
-    "extraResources": [
-      {
-        "from": "icons/icon.ico",
-        "to": "icons/icon.ico",
-        "filter": "**/*"
-      },
-      {
-        "from": "icons/icon.ico",
-        "to": "icon.ico",
-        "filter": "**/*"
-      }
-    ],
     "files": [
       "main.js",
       "preload.js",
       "package.json",
-      "icons/icon.png"
+      "icons/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "icons/icon.ico",
+        "to": "icon.ico"
+      }
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "TU_USUARIO",
+        "repo": "whatsapp-electron"
+      }
     ],
     "linux": {
       "target": [
-        "deb"
+        "AppImage",
+        "deb",
+        "pacman"
       ],
       "category": "Network",
       "icon": "icons",
       "maintainer": "StormGamesStudios <meliodas.aitor@gmail.com>",
       "synopsis": "Cliente no oficial de WhatsApp Web",
       "description": "Aplicación ligera basada en Electron que abre WhatsApp Web y guarda tus datos de sesión localmente."
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
     }
-  },
-  "devDependencies": {
-    "electron": "^39.1.0",
-    "electron-builder": "^26.0.12"
-  },
-  "dependencies": {
-    "electron-store": "^11.0.2"
   }
 }

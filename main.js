@@ -1,89 +1,111 @@
-const { app, BrowserWindow, Tray, Menu, shell } = require("electron");
-const path = require("path");
-const Store = require("electron-store").default;
-const { version } = require("./package.json");
+const { app, BrowserWindow, Tray, Menu, nativeImage } = require('electron');
+const path = require('path');
+const { autoUpdater } = require('electron-updater');
+const log = require('electron-log');
 
-const store = new Store();
+let win;
+let tray;
+let isQuitting = false;
 
-let tray = null; // Bandeja del sistema (tray) global
-let mainWindow = null;
+// 🔄 logs de updates
+log.transports.file.level = "info";
+autoUpdater.logger = log;
+
+// ⚡ evitar error "Chrome 85"
+app.commandLine.appendSwitch("disable-features", "OutOfBlinkCors");
 
 function createWindow() {
-  // Recuperamos tamaño y posición guardada
-  const windowState = store.get("windowState") || { width: 1200, height: 800 };
-
-  const win = new BrowserWindow({
-    width: windowState.width,
-    height: windowState.height,
-    x: windowState.x,
-    y: windowState.y,
+  win = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    minWidth: 900,
+    minHeight: 600,
     show: false,
+    autoHideMenuBar: true,
+    icon: path.join(__dirname, 'icons/icon.png'),
     webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-      preload: path.join(__dirname, "preload.js"),
-    },
-    icon: path.join(__dirname, "icons", "icon.png"),
-  });
-
-  // Guardar tamaño y posición al mover o redimensionar
-  win.on("close", () => {
-    store.set("windowState", win.getBounds());
-  });
-
-  const ua =
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36";
-  win.loadURL("https://web.whatsapp.com", { userAgent: ua });
-  mainWindow = win;
-
-  // Crear bandeja solo si no existe
-  if (!tray) {
-    tray = new Tray(path.join(__dirname, "icons", "icon.png"));
-    const contextMenu = Menu.buildFromTemplate([
-      { label: `WhatsApp Web v${version}`, enabled: false },
-      { type: "separator" },
-      { label: "Mostrar WhatsApp", click: () => mainWindow.show() },
-      {
-        label: "Información",
-        click: () =>
-          shell.openExternal("https://github.com/acierto-incomodo/StormStore"),
-      },
-      { label: "Salir", click: () => app.quit() },
-    ]);
-
-    tray.setToolTip("WhatsApp Web");
-    tray.setContextMenu(contextMenu);
-
-    tray.on("click", () => mainWindow.show());
-  }
-
-  win.on("ready-to-show", () => win.hide());
-
-  mainWindow.on("close", (event) => {
-    if (!app.isQuiting) {
-      event.preventDefault();
-      mainWindow.hide();
+      preload: path.join(__dirname, 'preload.js')
     }
+  });
+
+  // 🔥 User agent moderno
+  win.webContents.setUserAgent(
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  );
+
+  win.loadURL("https://web.whatsapp.com");
+
+  // 🚀 iniciar maximizado
+  win.maximize();
+  win.show();
+
+  // ❌ cerrar = ocultar (no matar app)
+  win.on('close', (e) => {
+    if (!isQuitting) {
+      e.preventDefault();
+      win.hide();
+    }
+  });
+
+  // 🔔 permisos notificaciones
+  win.webContents.session.setPermissionRequestHandler((wc, permission, callback) => {
+    if (permission === "notifications") callback(true);
+    else callback(false);
   });
 }
 
+function createTray() {
+  const icon = nativeImage.createFromPath(
+    path.join(__dirname, 'icons/icon.png')
+  );
+
+  tray = new Tray(icon);
+
+  const menu = Menu.buildFromTemplate([
+    {
+      label: 'Abrir WhatsApp',
+      click: () => win.show()
+    },
+    {
+      label: 'Maximizar',
+      click: () => {
+        win.show();
+        win.maximize();
+      }
+    },
+    { type: 'separator' },
+    {
+      label: 'Salir',
+      click: () => {
+        isQuitting = true;
+        app.quit();
+      }
+    }
+  ]);
+
+  tray.setToolTip('WhatsApp Web');
+  tray.setContextMenu(menu);
+
+  tray.on('click', () => {
+    win.isVisible() ? win.hide() : win.show();
+  });
+}
+
+// 🚀 auto-start sistema
+app.setLoginItemSettings({
+  openAtLogin: true,
+  openAsHidden: true
+});
+
 app.whenReady().then(() => {
   createWindow();
+  createTray();
 
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
-
-  app.setLoginItemSettings({
-    openAtLogin: true,
-    path: process.execPath,
-  });
+  // 🔄 auto updates
+  autoUpdater.checkForUpdatesAndNotify();
 });
 
-app.on("window-all-closed", () => {
-  /* no hacemos nada */
-});
-
-app.on("before-quit", () => {
-  app.isQuiting = true;
+// ❌ evitar cierre total accidental
+app.on('window-all-closed', (e) => {
+  e.preventDefault();
 });

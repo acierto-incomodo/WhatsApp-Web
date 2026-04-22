@@ -1,6 +1,13 @@
 whatsapp-electron/
-│
-├─ main.js
-├─ preload.js
-├─ package.json
-└─ icon.png    ← (tu icono, opcional, 512x512 recomendado)
+├── package.json
+├── main.js
+├── preload.js
+├── renderer.js
+├── assets/
+│   └── icon.png
+├── build/
+│   └── icon.png
+├── dist/                (se genera solo)
+├── scripts/
+│   └── flatpak.sh
+└── README.md
