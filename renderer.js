@@ -1,13 +1,18 @@
-// detectar cambios en WhatsApp Web
+// Detectar mensajes no leídos observando el título de la página
+// Esto es más eficiente y funciona independientemente del idioma configurado.
 const observer = new MutationObserver(() => {
-  const unread = document.querySelectorAll('[aria-label*="no leídos"]');
+  const title = document.title;
+  const match = title.match(/\((\d+)\)/);
 
-  if (unread.length > 0) {
-    console.log("Tienes mensajes nuevos");
+  if (match && match[1]) {
+    console.log(`Tienes ${match[1]} mensajes nuevos`);
+    // Aquí podrías enviar una notificación al proceso principal si fuera necesario
   }
 });
 
-observer.observe(document.body, {
-  childList: true,
-  subtree: true,
-});
+const titleElement = document.querySelector('title');
+if (titleElement) {
+  observer.observe(titleElement, {
+    childList: true,
+  });
+}
